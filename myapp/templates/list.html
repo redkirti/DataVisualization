@@ -32,8 +32,36 @@
                     {{ form.docfile }}
                 </p>
 
-                <p><input type="submit" value="Upload"/></p>
+                <p><input type="submit" name = "upload" value="Upload"/></p>
             </form>
+
+
+
+            <div>
+                {% if colheads %}
+                    <form action="{% url "my-form" %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="newid" value="{{id}}">
+                        <label for="cols1">Select a Column:</label>
+                        <select name="cols1" id="cols1">
+                            {% for key, value in colheads.items %}
+                                <option value="{{value}}">{{key}}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="cols2">Select a Column:</label>
+                        <select name="cols2" id="cols2">
+                            {% for key, value in colheads.items %}
+                                <option value="{{value}}">{{key}}</option>
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <input type="submit" name="colselect" value="Submit">
+                    </form>
+                {% endif %}
+            </div>
+
+
+
 
             <!-- Image Block -->
             <div>

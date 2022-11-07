@@ -6,33 +6,44 @@ import matplotlib.pyplot as plt
 
 
 def my_form(request):
-    message = 'Upload as many files as you want!'
+    # for doc in documents:
+    #     doc.delete()
+    message = 'Upload a CSV File'
+    imgname = ""
+    colheads = {}
+    id = 0
+    form = DocumentForm()
     # Handle file upload
     if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            newdoc = Document(docfile=request.FILES['docfile'])
-            newdoc.save()
-            imgname = plotgraph(newdoc)
-            # Redirect to the document list after POST
-            # return redirect('my-form')
-        else:
-            message = 'The form is not valid. Fix the following error:'
-    else:
-        imgname = ""
-        form = DocumentForm()  # An empty, unbound form
+        if 'upload' in request.POST:
+            form = DocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                newdoc = Document(docfile=request.FILES['docfile'])
+                newdoc.save()
+                id = newdoc.id
+                colheads = selColumns(newdoc)
+                # imgname = plotgraph(newdoc)
+                # Redirect to the document list after POST
+                # return redirect('my-form')
+            else:
+                message = 'The form is not valid. Fix the following error:'
+        elif 'colselect' in request.POST:
+            id = int(request.POST.get("newid"))
+            newdoc = Document.objects.get(id=id)
+            x = []
+            x.append(int(request.POST.get("cols1")))
+            x.append(int(request.POST.get("cols2")))
+            imgname = plotgraph(newdoc, x)
 
     # Load documents for the list page
     documents = Document.objects.all()
-    for doc in documents:
-        doc.delete()
 
     # Render list page with the documents and the form
-    context = {'documents': documents, 'form': form, 'message': message, 'imgname': imgname}
+    context = {'documents': documents, 'form': form, 'message': message, 'imgname': imgname, 'colheads': colheads, 'id': id}
     return render(request, 'list.html', context)
 
 
-def plotgraph(doc):
+def plotgraph(doc, x):
     I = {}
     M = []
     plt.figure(figsize=(10,8))
@@ -50,7 +61,7 @@ def plotgraph(doc):
                 M.append(row)
 
     col = []
-    for i in range (1,count):
+    for i in x:
         temp = list(map(lambda r: r[i], M))
         temp = list(map(lambda x: float(x), temp))
         col.append(temp)
@@ -65,3 +76,15 @@ def plotgraph(doc):
     plt.savefig(imgname)
     imgname = doc.docfile.url+".png"
     return imgname
+
+
+def selColumns(doc):
+    colheads = {}
+    with open(doc.docfile.path, newline='') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in csvreader:
+            for i in range(len(row)):
+                colheads[row[i]] = i
+            break
+    return colheads
+    
