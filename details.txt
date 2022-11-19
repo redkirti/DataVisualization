@@ -1,0 +1,9 @@
+redkirti
+kirti1234
+
+
+database
+datavisualization - database name
+dvuser - user name
+kirti - password
+localhost - host

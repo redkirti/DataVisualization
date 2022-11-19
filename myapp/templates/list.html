@@ -7,33 +7,85 @@
 
     <body>
         <div>
+            <button onclick="
+                document.getElementById('uploadset').style.display='block';
+                document.getElementById('datasets').style.display='none';
+            ">Upload File</button>
+            <button onclick="
+            document.getElementById('datasets').style.display='block';
+            document.getElementById('uploadset').style.display='none';
+            ">Choose from Database</button>
             <!-- List of uploaded documents -->
-            {% if documents %}
-            All documents in the database:
-            <ul>
-                {% for document in documents %}
-                    <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
-                {% endfor %}
-            </ul>
-            {% else %}
-                <p>No documents.</p>
-            {% endif %}
+            <div id="datasets" style="display: none;">
+                {% if documents %}
+                Choose datasets from database:
+                <ul>
+                    {% for document in documents %}
+                        <li>
+                            <a href="{{ document.docfile.url }}">{{ document.tag }}</a>
+                            <form style="display: inline;" action="{% url "my-form" %}" method="post">
+                                {% csrf_token %}
+                                <button name="exampleset" type="submit" value="{{document.id}}">Use</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                    <p>No documents.</p>
+                {% endif %}
+            </div>
 
             <!-- Upload form. Note enctype attribute! -->
-            <form action="{% url "my-form" %}" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ message }}
-                <p>{{ form.non_field_errors }}</p>
+            <div id="uploadset" style="display: none;">
+                <form action="{% url "my-form" %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <p>{{ form.non_field_errors }}</p>
+    
+                    <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+    
+                    <p>
+                        {{ form.docfile.errors }}
+                        {{ form.docfile }}
+                    </p>
+                    <p>{{ form.tag.label_tag }} {{ form.tag.help_text }}</p>
+    
+                    <p>
+                        {{ form.tag.errors }}
+                        {{ form.tag }}
+                    </p>
+    
+                    <p><input type="submit" name = "upload" value="Upload"/></p>
+                </form>
+            </div>
 
-                <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
 
-                <p>
-                    {{ form.docfile.errors }}
-                    {{ form.docfile }}
-                </p>
 
-                <p><input type="submit" name = "upload" value="Upload"/></p>
-            </form>
+            <div>
+                {% if graph %}
+                    <form action="{% url "my-form" %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="newid" value="{{id}}">
+                        <label for="graph">Select a Graph:</label>
+                        <select name="graph" id="graph">
+                            <option value="1">Line</option>
+                            <option value="2">Bar</option>
+                            <option value="3">Histogram</option>
+                            <option value="4">Pie</option>
+                        </select>
+                        <label for="csep">Select Column Separator:</label>
+                        <select name="csep" id="csep">
+                            <option value="1">Space</option>
+                            <option value="2">Comma</option>
+                            <option value="3">Tab</option>
+                            <option value="4">Semicolon</option>
+                            <option value="5">Colon</option>
+                            <option value="6">Hyphen</option>
+                        </select>
+                        <br><br>
+                        <input type="submit" name="graphselect" value="Submit">
+                    </form>
+                {% endif %}
+            </div>
 
 
 
@@ -42,6 +94,9 @@
                     <form action="{% url "my-form" %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="newid" value="{{id}}">
+                        <input type="hidden" name="newgraph" value="{{graph}}">
+                        <input type="hidden" name="csep" value="{{csep}}">
+                        
                         <label for="cols1">Select a Column:</label>
                         <select name="cols1" id="cols1">
                             {% for key, value in colheads.items %}
@@ -68,6 +123,8 @@
                 {% if imgname %}
                     <!-- {{imgname}} -->
                     <img src="{{imgname}}">
+                    <br>
+                    <a href="{{imgname}}" download><button>Download Image</button></a>
                 {% endif %}
             </div>
         </div>
