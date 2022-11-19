@@ -97,7 +97,7 @@
                         <input type="hidden" name="newgraph" value="{{graph}}">
                         <input type="hidden" name="csep" value="{{csep}}">
                         
-                        <label for="cols1">Select a Column:</label>
+                        <!-- <label for="cols1">Select X or leave blank:</label>
                         <select name="cols1" id="cols1">
                             {% for key, value in colheads.items %}
                                 <option value="{{value}}">{{key}}</option>
@@ -108,7 +108,20 @@
                             {% for key, value in colheads.items %}
                                 <option value="{{value}}">{{key}}</option>
                             {% endfor %}
-                        </select>
+                        </select> -->
+
+                        {% for key, value in colheads.items %}
+                            <label for="cols{{value}}">Select a Column:</label>
+                            <select name="cols{{value}}" id="cols{{value}}">
+                                {% for key, value in colheads.items %}
+                                    <option value="{{value}}">{{key}}</option>
+                                {% endfor %}
+                                <option value="100" selected>None</option>
+                            </select>
+                        {% endfor %}
+                        
+
+
                         <br><br>
                         <input type="submit" name="colselect" value="Submit">
                     </form>
@@ -119,10 +132,10 @@
 
 
             <!-- Image Block -->
-            <div>
+            <div style="text-align: center ;height: 80vh;">
                 {% if imgname %}
                     <!-- {{imgname}} -->
-                    <img src="{{imgname}}">
+                    <img src="{{imgname}}" style="max-height:100%; max-width:100%; object-fit: contain;">
                     <br>
                     <a href="{{imgname}}" download><button>Download Image</button></a>
                 {% endif %}

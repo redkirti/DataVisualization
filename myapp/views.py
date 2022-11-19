@@ -39,8 +39,12 @@ def my_form(request):
             csep = int(request.POST.get("csep"))
             newdoc = Document.objects.get(id=cid)
             x = []
-            x.append(int(request.POST.get("cols1")))
-            x.append(int(request.POST.get("cols2")))
+            y = selColumns(newdoc,csep)
+            for i in range(len(y)):
+                s = "cols"+str(i)
+                x.append(int(request.POST.get(s)))
+            # x.append(int(request.POST.get("cols1")))
+            # x.append(int(request.POST.get("cols2")))
             imgname = plotgraph(newdoc, x, graph, csep)
         elif 'exampleset' in request.POST:
             cid = int(request.POST.get("exampleset"))
@@ -66,6 +70,18 @@ def my_form(request):
 def plotgraph(doc, x, graph, sep):
     I = {}
     M = []
+    colors = {
+        0:'blue',
+        1:'orange', 
+        2:'green', 
+        3:'red', 
+        4:'purple', 
+        5:'brown', 
+        6:'pink', 
+        7:'gray', 
+        8:'olive', 
+        9:'cyan'
+    }
     if(sep==1):
         d = ' '
     elif(sep==2):
@@ -80,7 +96,7 @@ def plotgraph(doc, x, graph, sep):
         d = '-'
     else:
         d = ' '
-    plt.figure(figsize=(10,8))
+    # plt.figure(figsize=(20,7))
     rowNum = 0
     with open(doc.docfile.path, newline='') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=d, quotechar='"')
@@ -95,48 +111,89 @@ def plotgraph(doc, x, graph, sep):
                 M.append(row)
     labels = list(I.keys())
     col = []
-    plt.subplot(2, 1, 1)
+    # plt.subplot(2, 1, 1)
+
+    plt.xticks(rotation='vertical')
     if(graph == 1):
+        lb = []
         for i in x:
+            if(i==100):
+                continue
             temp = list(map(lambda r: r[i], M))
-            temp = list(map(lambda x: float(x), temp))
+            temp = list(map(lambda z: float(z), temp))
             col.append(temp)
-        plt.plot(col[0], col[1], ls='solid', color='blue', marker='o', markersize=9, mew=2, linewidth=2)
-        plt.xlabel(labels[0])
-        plt.ylabel(labels[1])
+            lb.append(labels[i])
+
+        if(x[0]==100):
+            for i in range(len(col)):
+                plt.plot(col[i], ls='solid', label=lb[i] ,color=colors[i])
+            plt.xlabel('X')
+        else:
+            for i in range(1,len(col)):
+                plt.plot(col[0], col[i], label=lb[i],ls='solid', color=colors[i])
+            plt.xlabel(labels[x[0]])
+        plt.ylabel('Y')
+        plt.legend(loc=0)
     elif(graph == 2):
-        for i in x:
-            if(i==0):
-                temp = list(map(lambda r: r[i], M))
-                col.append(temp)
+        lb = []
+        for i in range(1,len(x)):
+            if(x[i]==100):
                 continue
-            temp = list(map(lambda r: r[i], M))
-            temp = list(map(lambda x: float(x), temp))
+            temp = list(map(lambda r: r[x[i]], M))
+            temp = list(map(lambda z: float(z), temp))
             col.append(temp)
-        plt.bar(col[0], col[1], color='maroon', width=0.4)
-        plt.xlabel(labels[0])
-        plt.ylabel(labels[1])
+            lb.append(labels[x[i]])
+        x_axis = list(map(lambda r: r[x[0]], M))
+        xaxisls = [z for z in range(len(x_axis))]
+        plt.xticks(xaxisls,x_axis)
+        if(len(col)%2!=0):
+            diff = 0.30*(int(len(col)/2))
+            xaxisls = list(map(lambda x: x-diff,xaxisls))
+            for i in range(len(col)):
+                plt.bar(xaxisls, col[i], label=lb[i], color=colors[i], width=0.30)
+                xaxisls = list(map(lambda x: x+0.30,xaxisls))
+        else:
+            diff = 0.30*(int(len(col)/2)) -0.15
+            xaxisls = list(map(lambda x: x-diff,xaxisls))
+            for i in range(len(col)):
+                plt.bar(xaxisls, col[i], label=lb[i], color=colors[i], width=0.30)
+                xaxisls = list(map(lambda x: x+0.30,xaxisls))
+        plt.xlabel(labels[x[0]])
+        plt.ylabel('Y')
+        plt.legend(loc=0)
     elif(graph == 3):
-        for i in x:
-            temp = list(map(lambda r: r[i], M))
-            temp = list(map(lambda x: float(x), temp))
-            col.append(temp)
-        plt.hist(col[1], col[0], facecolor='blue', alpha=0.5)
-        plt.xlabel(labels[0])
-        plt.ylabel(labels[1]) 
-    else:
-        for i in x:
-            if(i==0):
-                temp = list(map(lambda r: r[i], M))
-                col.append(temp)
+        for i in range(1,len(x)):
+            if(x[i]==100):
                 continue
-            temp = list(map(lambda r: r[i], M))
+            temp = list(map(lambda r: r[x[i]], M))
             temp = list(map(lambda x: float(x), temp))
             col.append(temp)
-        plt.pie(col[1], labels = col[0])
+            plt.ylabel(labels[x[i]]) 
+            break
+        plt.hist(col[0], facecolor='blue')
+        plt.xlabel('X')
+    else:
+        for i in range(1,len(x)):
+            if(x[i]==100):
+                continue
+            temp = list(map(lambda r: r[x[i]], M))
+            temp = list(map(lambda x: float(x), temp))
+            col.append(temp)
+            break
+            # temp = list(map(lambda r: r[i], M))
+            # temp = list(map(lambda x: float(x), temp))
+            # col.append(temp)
+        x_axis = list(map(lambda r: r[x[0]], M))
+        plt.subplot(1, 2, 1)
+        patches, texts = plt.pie(col[0], rotatelabels=True)
+        plt.subplot(1, 2, 2)
+        plt.axis("off")
+        plt.legend(patches,x_axis,loc='best')
     imgname = doc.docfile.path+".png"
     print(imgname)
-    plt.savefig(imgname, bbox_inches='tight')
+    # ax = plt.axes()
+    # ax.axis('scaled')
+    plt.savefig(imgname, bbox_inches='tight', dpi=100)
     imgname = doc.docfile.url+".png"
     return imgname
 
