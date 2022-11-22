@@ -10,6 +10,7 @@
     </head>
 
     <body class="body">
+        <!-- Top Navbar -->
         <div id="topdiv">
             <nav class="navbar fixed-top navbar-dark bg-dark">
                 <a class="navbar-brand" href="#">Data Visualization</a>
@@ -17,8 +18,10 @@
         </div>
         <br>
 
+        <!-- Main Div -->
         <div class="setmargin centeralign">
             
+            <!-- Buttons to Choose Data -->
             <div>
                 <button type="button" data-toggle="collapse" data-target="#collapseUF" aria-expanded="false" aria-controls="collapseUF" class="tgl btn btn-secondary btn-lg" 
                 onclick="document.getElementById('imgdiv').style.display='none';">Upload File</button>
@@ -50,7 +53,6 @@
                 <form action="{% url "my-form" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <p>{{ form.non_field_errors }}</p>
-                    
                     <!-- <p style="display: inline;">{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>-->
                     <p id="choosefile" >
                         {{ form.docfile.errors }}
@@ -74,6 +76,7 @@
 
             <br>
 
+            <!-- Form for Choosing graph -->
             <div>
                 {% if graph %}
                     <form action="{% url "my-form" %}" method="post">
@@ -101,7 +104,7 @@
                 {% endif %}
             </div>
 
-
+            <!-- Creating Select boxes according to graph type and passing the columns to plot -->
             <div>
                 {% if colheads %}
                     <form action="{% url "my-form" %}" method="post">
@@ -144,9 +147,7 @@
             </div>
 
 
-
-
-            <!-- Image Block -->
+            <!-- Image Block to show Image -->
             <div id="imgdiv" style="text-align: center ;height: 80vh;">
                 {% if imgname %}
                     <!-- {{imgname}} -->

@@ -4,11 +4,13 @@ from .forms import DocumentForm
 import csv
 import matplotlib.pyplot as plt
 
-
+# Function for the welcome page
 def welcome(request):
     return render(request, 'welcome.html')
 
+# Function for the main app page
 def my_form(request):
+    # Initializing empty variables
     imgname = ""
     colheads = {}
     graph = None
@@ -17,6 +19,7 @@ def my_form(request):
     form = DocumentForm()
     # Handle file upload
     if request.method == 'POST':
+        # If request is from uploading form
         if 'upload' in request.POST:
             form = DocumentForm(request.POST, request.FILES)
             if form.is_valid():
@@ -24,11 +27,10 @@ def my_form(request):
                 newdoc.save()
                 cid = newdoc.id
                 graph = 1234
-                # imgname = plotgraph(newdoc)
-                # Redirect to the document list after POST
-                # return redirect('my-form')
+
             else:
                 message = 'The form is not valid. Fix error:'
+        # If request is from graph selection form
         elif 'graphselect' in request.POST:
             cid = int(request.POST.get("newid"))
             graph = int(request.POST.get("graph"))
@@ -37,6 +39,7 @@ def my_form(request):
 
             newdoc = Document.objects.get(id=cid)
             colheads = selColumns(newdoc,csep)
+        # If request is from Column selection form
         elif 'colselect' in request.POST:
             cid = int(request.POST.get("newid"))
             graph = int(request.POST.get("newgraph"))
@@ -46,19 +49,22 @@ def my_form(request):
             x = []
             y = selColumns(newdoc,csep)
             temp = len(y)
+            # If graph is histogram, only accepting one value
             if(graph==3):
                 temp = 1
+            #  If graph is a PIE chart, only accepting label and one column
             elif(graph == 4):
                 temp=2
+            # Creating list of columns to plot
             for i in range(temp):
                 s = "cols"+str(i)
                 x.append(int(request.POST.get(s)))
             print("HELLO")
             for i in x:
                 print(i)
-            # x.append(int(request.POST.get("cols1")))
-            # x.append(int(request.POST.get("cols2")))
+            # Send to plot graph
             imgname = plotgraph(newdoc, x, graph, csep)
+        # If request is from uploaded files
         elif 'exampleset' in request.POST:
             cid = int(request.POST.get("exampleset"))
             graph = 1234
@@ -83,6 +89,7 @@ def my_form(request):
 def plotgraph(doc, x, graph, sep):
     I = {}
     M = []
+    # Setting up different colour values
     colors = {
         0:'blue',
         1:'orange', 
@@ -95,6 +102,7 @@ def plotgraph(doc, x, graph, sep):
         8:'olive', 
         9:'cyan'
     }
+    # Setting up different Column separators
     if(sep==1):
         d = ' '
     elif(sep==2):
@@ -109,8 +117,9 @@ def plotgraph(doc, x, graph, sep):
         d = '-'
     else:
         d = ' '
-    # plt.figure(figsize=(20,7))
+
     rowNum = 0
+    # Reading the file
     with open(doc.docfile.path, newline='') as csvfile:
         csvreader = csv.reader(csvfile, delimiter=d, quotechar='"')
         for row in csvreader:
@@ -124,10 +133,12 @@ def plotgraph(doc, x, graph, sep):
                 M.append(row)
     labels = list(I.keys())
     col = []
-    # plt.subplot(2, 1, 1)
     
+    # Clearing all previous plotted graphs
     plt.switch_backend('AGG')
     plt.xticks(rotation='vertical')
+
+    # If graph is line graph
     if(graph == 1):
         lb = []
         for i in x:
@@ -151,6 +162,8 @@ def plotgraph(doc, x, graph, sep):
             plt.xlabel(labels[x[0]])
         plt.ylabel('Y')
         plt.legend(loc=0)
+
+    # If graph is Bar Graph
     elif(graph == 2):
         lb = []
         for i in range(1,len(x)):
@@ -178,11 +191,15 @@ def plotgraph(doc, x, graph, sep):
         plt.xlabel(labels[x[0]])
         plt.ylabel('Y')
         plt.legend(loc=0)
+
+    # If graph is Histogram
     elif(graph == 3):
         temp = list(map(lambda r: r[x[0]], M))
         temp = list(map(lambda x: float(x), temp))
         plt.hist(temp, facecolor='blue')
         plt.xlabel('X')
+
+    # If graph is a Pie Chart
     else:
         lb = None
         for i in range(1,len(x)):
@@ -193,25 +210,21 @@ def plotgraph(doc, x, graph, sep):
             col.append(temp)
             lb = labels[x[i]]
             break
-            # temp = list(map(lambda r: r[i], M))
-            # temp = list(map(lambda x: float(x), temp))
-            # col.append(temp)
+
         x_axis = list(map(lambda r: r[x[0]], M))
         plt.pie(col[0], labels=x_axis, rotatelabels=True)
         plt.title(lb)
         plt.axis("off")
         # plt.legend(patches,x_axis,loc='best')
 
+    # Setting the pathname of image file
     imgname = doc.docfile.path+".png"
     print(imgname)
-    # ax = plt.axes()
-    # ax.axis('scaled')
     plt.savefig(imgname, bbox_inches='tight', dpi=100)
-    # plt.close()
     imgname = doc.docfile.url+".png"
     return imgname
 
-
+# Function for returning a dictionary of columns with their indexes
 def selColumns(doc, sep):
     colheads = {}
     if(sep==1):
