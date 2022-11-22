@@ -1,6 +1,7 @@
 redkirti
 kirti1234
 
+source /home/redkirti/.virtualenvs/DataVisualization-DOPDuCdT/bin/activate
 
 database
 datavisualization - database name

@@ -29,6 +29,7 @@ def my_form(request):
         elif 'graphselect' in request.POST:
             cid = int(request.POST.get("newid"))
             graph = int(request.POST.get("graph"))
+            print(graph)
             csep = int(request.POST.get("csep"))
 
             newdoc = Document.objects.get(id=cid)
@@ -36,6 +37,7 @@ def my_form(request):
         elif 'colselect' in request.POST:
             cid = int(request.POST.get("newid"))
             graph = int(request.POST.get("newgraph"))
+            print("HELLO" + str(graph))
             csep = int(request.POST.get("csep"))
             newdoc = Document.objects.get(id=cid)
             x = []
@@ -43,6 +45,9 @@ def my_form(request):
             for i in range(len(y)):
                 s = "cols"+str(i)
                 x.append(int(request.POST.get(s)))
+            print("HELLO")
+            for i in x:
+                print(i)
             # x.append(int(request.POST.get("cols1")))
             # x.append(int(request.POST.get("cols2")))
             imgname = plotgraph(newdoc, x, graph, csep)
@@ -112,7 +117,8 @@ def plotgraph(doc, x, graph, sep):
     labels = list(I.keys())
     col = []
     # plt.subplot(2, 1, 1)
-
+    
+    plt.switch_backend('AGG')
     plt.xticks(rotation='vertical')
     if(graph == 1):
         lb = []
@@ -123,13 +129,16 @@ def plotgraph(doc, x, graph, sep):
             temp = list(map(lambda z: float(z), temp))
             col.append(temp)
             lb.append(labels[i])
-
+        print("sdghshdfjkds")
+        for i in col:
+            print(i)
         if(x[0]==100):
             for i in range(len(col)):
                 plt.plot(col[i], ls='solid', label=lb[i] ,color=colors[i])
             plt.xlabel('X')
         else:
             for i in range(1,len(col)):
+                print("YOYO")
                 plt.plot(col[0], col[i], label=lb[i],ls='solid', color=colors[i])
             plt.xlabel(labels[x[0]])
         plt.ylabel('Y')
@@ -173,27 +182,30 @@ def plotgraph(doc, x, graph, sep):
         plt.hist(col[0], facecolor='blue')
         plt.xlabel('X')
     else:
+        lb = None
         for i in range(1,len(x)):
             if(x[i]==100):
                 continue
             temp = list(map(lambda r: r[x[i]], M))
             temp = list(map(lambda x: float(x), temp))
             col.append(temp)
+            lb = labels[x[i]]
             break
             # temp = list(map(lambda r: r[i], M))
             # temp = list(map(lambda x: float(x), temp))
             # col.append(temp)
         x_axis = list(map(lambda r: r[x[0]], M))
-        plt.subplot(1, 2, 1)
-        patches, texts = plt.pie(col[0], rotatelabels=True)
-        plt.subplot(1, 2, 2)
+        plt.pie(col[0], labels=x_axis, rotatelabels=True)
+        plt.title(lb)
         plt.axis("off")
-        plt.legend(patches,x_axis,loc='best')
+        # plt.legend(patches,x_axis,loc='best')
+
     imgname = doc.docfile.path+".png"
     print(imgname)
     # ax = plt.axes()
     # ax.axis('scaled')
     plt.savefig(imgname, bbox_inches='tight', dpi=100)
+    # plt.close()
     imgname = doc.docfile.url+".png"
     return imgname
 

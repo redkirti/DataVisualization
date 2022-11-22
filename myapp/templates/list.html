@@ -96,19 +96,6 @@
                         <input type="hidden" name="newid" value="{{id}}">
                         <input type="hidden" name="newgraph" value="{{graph}}">
                         <input type="hidden" name="csep" value="{{csep}}">
-                        
-                        <!-- <label for="cols1">Select X or leave blank:</label>
-                        <select name="cols1" id="cols1">
-                            {% for key, value in colheads.items %}
-                                <option value="{{value}}">{{key}}</option>
-                            {% endfor %}
-                        </select>
-                        <label for="cols2">Select a Column:</label>
-                        <select name="cols2" id="cols2">
-                            {% for key, value in colheads.items %}
-                                <option value="{{value}}">{{key}}</option>
-                            {% endfor %}
-                        </select> -->
 
                         {% for key, value in colheads.items %}
                             <label for="cols{{value}}">Select a Column:</label>
