@@ -5,6 +5,9 @@ import csv
 import matplotlib.pyplot as plt
 
 
+def welcome(request):
+    return render(request, 'welcome.html')
+
 def my_form(request):
     imgname = ""
     colheads = {}
@@ -42,7 +45,12 @@ def my_form(request):
             newdoc = Document.objects.get(id=cid)
             x = []
             y = selColumns(newdoc,csep)
-            for i in range(len(y)):
+            temp = len(y)
+            if(graph==3):
+                temp = 1
+            elif(graph == 4):
+                temp=2
+            for i in range(temp):
                 s = "cols"+str(i)
                 x.append(int(request.POST.get(s)))
             print("HELLO")
@@ -92,7 +100,7 @@ def plotgraph(doc, x, graph, sep):
     elif(sep==2):
         d = ','
     elif(sep==3):
-        d = '   '
+        d = '\t'
     elif(sep==4):
         d = ';'
     elif(sep==5):
@@ -171,15 +179,9 @@ def plotgraph(doc, x, graph, sep):
         plt.ylabel('Y')
         plt.legend(loc=0)
     elif(graph == 3):
-        for i in range(1,len(x)):
-            if(x[i]==100):
-                continue
-            temp = list(map(lambda r: r[x[i]], M))
-            temp = list(map(lambda x: float(x), temp))
-            col.append(temp)
-            plt.ylabel(labels[x[i]]) 
-            break
-        plt.hist(col[0], facecolor='blue')
+        temp = list(map(lambda r: r[x[0]], M))
+        temp = list(map(lambda x: float(x), temp))
+        plt.hist(temp, facecolor='blue')
         plt.xlabel('X')
     else:
         lb = None
@@ -217,7 +219,7 @@ def selColumns(doc, sep):
     elif(sep==2):
         d = ','
     elif(sep==3):
-        d = '   '
+        d = '\t'
     elif(sep==4):
         d = ';'
     elif(sep==5):
