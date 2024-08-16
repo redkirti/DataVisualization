@@ -1,69 +1,76 @@
+---
 
 # Graph Visualization Web App
 
-This web application is built using Django, Matlab, and PostgreSQL, allowing users to upload CSV files and create customizable graphs. The app leverages `matplotlib` to generate and export graphs in various formats, such as line, bar, pie, and histogram.
+## Overview
+
+This web application allows users to upload CSV files and create customizable graphs based on different separators. The app is built using Django for the backend, with graph visualization functionalities powered by Matlab and matplotlib. Data is stored in a PostgreSQL database.
 
 ## Features
 
-- **CSV File Upload**: Users can upload CSV files to the app.
-- **Graph Customization**: Based on the uploaded data, users can select different graph types (line, bar, pie, histogram).
-- **Matplotlib Integration**: The app uses `matplotlib` to generate graphs and export them in different formats.
-- **Database**: PostgreSQL is used to store information about the uploaded files.
+- **CSV Data Upload**: Users can upload CSV files with varying separators.
+- **Customizable Graph Creation**: The app supports creating different types of graphs based on the uploaded data.
+- **Graph Types**:
+  - Line
+  - Bar
+  - Pie
+  - Histogram
+- **Graph Export**: Graphs can be exported in various formats for use in reports and presentations.
 
-## Requirements
+## Technologies Used
 
-- Python 3.x
-- Django 3.x
-- PostgreSQL
-- Matplotlib
-- Matlab (optional for specific features)
+- **Django**: Backend framework for handling web requests and database interactions.
+- **Matlab**: Used for advanced data processing and visualization.
+- **matplotlib**: Python library for creating static, animated, and interactive visualizations.
+- **PostgreSQL**: Relational database system used for data storage.
 
 ## Installation
 
-1. Clone this repository:
-    ```bash
-    git clone <repository-url>
-    cd <repository-directory>
-    ```
+1. Clone the repository:
 
-2. Install required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   git clone https://github.com/yourusername/graph-visualization-webapp.git
+   cd graph-visualization-webapp
+   ```
 
-3. Configure your PostgreSQL database in the `settings.py` file:
-    ```python
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'your_db_name',
-            'USER': 'your_db_user',
-            'PASSWORD': 'your_db_password',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
-    ```
+2. Install the necessary dependencies:
 
-4. Run migrations:
-    ```bash
-    python manage.py migrate
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-5. Start the Django server:
-    ```bash
-    python manage.py runserver
-    ```
+3. Set up the database:
 
-6. Access the web application by navigating to `http://127.0.0.1:8000` in your web browser.
+   ```bash
+   python manage.py migrate
+   ```
+
+4. Run the development server:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+5. Access the web app at `http://127.0.0.1:8000/` in your web browser.
 
 ## Usage
 
-- Upload a CSV file via the upload form.
-- Select the type of graph you want to generate.
-- The app will process the CSV data and display the graph.
-- You can export the graph in various formats.
+1. Upload a CSV file through the provided interface.
+2. Select the desired separator for your CSV file.
+3. Choose the type of graph you want to generate (line, bar, pie, or histogram).
+4. Customize the graph settings (if necessary).
+5. Generate the graph.
+6. Export the graph in the desired format.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Django](https://www.djangoproject.com/)
+- [matplotlib](https://matplotlib.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Matlab](https://www.mathworks.com/products/matlab.html)
+
+---
